@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel del Comerciant – A la tardor, platillos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
+  <link rel="stylesheet" href="assets/css/panel.css" />
+</head>
+<body>
+  <div class="panel-container">
+    <!-- Header -->
+    <header class="panel-header">
+      <a href="index.html" class="back-link">← Tornar al mapa</a>
+      <div class="panel-badge">🏪 Panel del Comerciant</div>
+    </header>
+
+    <!-- Loading -->
+    <div id="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Carregant dades...</p>
+    </div>
+
+    <!-- Error -->
+    <div id="error" class="error-state hidden">
+      <p>⚠️ No s'ha trobat el comerciant. <a href="index.html">Tornar al mapa</a></p>
+    </div>
+
+    <!-- Content (hidden until loaded) -->
+    <main id="content" class="panel-content hidden">
+      <!-- Merchant identity -->
+      <section class="identity-card">
+        <h1 id="merchant-name"></h1>
+        <p class="identity-address" id="merchant-address"></p>
+        <div class="identity-dish">
+          <span class="dish-icon">🍽️</span>
+          <span id="merchant-dish"></span>
+        </div>
+      </section>
+
+      <!-- Event context -->
+      <section class="event-context">
+        <p class="event-label">📊 Esdeveniment</p>
+        <h2 id="event-name"></h2>
+        <p class="event-dates" id="event-dates"></p>
+      </section>
+
+      <!-- Key metrics -->
+      <section class="metrics-grid">
+        <div class="metric-card metric-highlight">
+          <div class="metric-icon">👀</div>
+          <div class="metric-value" id="metric-visits">0</div>
+          <div class="metric-label">persones van mirar el teu perfil</div>
+        </div>
+        <div class="metric-card metric-highlight">
+          <div class="metric-icon">🗺️</div>
+          <div class="metric-value" id="metric-routes">0</div>
+          <div class="metric-label">van prendre ruta cap al teu local</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📈</div>
+          <div class="metric-value" id="metric-conversion">0%</div>
+          <div class="metric-label">taxa de conversió</div>
+        </div>
+      </section>
+
+      <!-- Comparison -->
+      <section class="comparison-card">
+        <div class="comparison-icon">🔥</div>
+        <div class="comparison-text">
+          <span class="comparison-value" id="comparison-value">+0%</span>
+          <span class="comparison-label">visibilitat digital respecte a esdeveniments anteriors</span>
+        </div>
+      </section>
+
+      <!-- Ranking -->
+      <section class="ranking-card">
+        <h3>La teva posició en l'esdeveniment</h3>
+        <div class="ranking-row">
+          <span class="ranking-position" id="ranking-position">#0</span>
+          <span class="ranking-context" id="ranking-context">de 28 comerciants</span>
+        </div>
+        <div class="ranking-bar-container">
+          <div class="ranking-bar" id="ranking-bar"></div>
+        </div>
+      </section>
+
+      <!-- Daily breakdown (simple chart) -->
+      <section class="chart-card">
+        <h3>Visites per dia (simulació)</h3>
+        <div class="bar-chart" id="bar-chart">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="chart-legend">
+          <span class="chart-label-start">6 nov</span>
+          <span class="chart-label-end">23 nov</span>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <p class="cta-text">Vols aparèixer destacat amb perfil premium?</p>
+        <button class="btn-cta" onclick="alert('Funció disponible properament!')">Contacta'ns</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const merchantId = Number(params.get('id'));
+
+      if (!merchantId) {
+        showError();
+        return;
+      }
+
+      try {
+        const resp = await fetch('assets/data/merchants.json');
+        const data = await resp.json();
+        // Find merchant across all events
+        let merchant = null;
+        let merchantEvent = null;
+        for (const evt of data.events) {
+          const found = evt.merchants.find(m => m.id === merchantId);
+          if (found) { merchant = found; merchantEvent = evt; break; }
+        }
+        data._event = merchantEvent;
+        data._allMerchants = merchantEvent ? merchantEvent.merchants : [];
+
+        if (!merchant) {
+          showError();
+          return;
+        }
+
+        render(merchant, data);
+      } catch (e) {
+        console.error(e);
+        showError();
+      }
+    })();
+
+    function showError() {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('error').classList.remove('hidden');
+    }
+
+    function render(merchant, data) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('content').classList.remove('hidden');
+
+      // Identity
+      document.getElementById('merchant-name').textContent = merchant.name;
+      document.getElementById('merchant-address').textContent = merchant.address;
+      document.getElementById('merchant-dish').textContent = `${merchant.dish.name} · ${merchant.dish.price}`;
+
+      // Event
+      const evt = data._event;
+      document.getElementById('event-name').textContent = evt ? evt.name : '';
+      document.getElementById('event-dates').textContent = evt ? `${evt.dates.start} – ${evt.dates.end}` : '';
+
+      // Metrics
+      const visits = merchant.stats.visits;
+      const routes = merchant.stats.routes;
+      const conversion = Math.round((routes / visits) * 100);
+
+      animateCounter('metric-visits', visits);
+      animateCounter('metric-routes', routes);
+      document.getElementById('metric-conversion').textContent = `${conversion}%`;
+
+      // Comparison (fake but based on visits)
+      const boost = 120 + Math.round(visits * 2.5);
+      document.getElementById('comparison-value').textContent = `+${boost}%`;
+
+      // Ranking
+      const eventMerchants = data._allMerchants;
+      const sorted = [...eventMerchants].sort((a, b) => b.stats.visits - a.stats.visits);
+      const position = sorted.findIndex(m => m.id === merchant.id) + 1;
+      document.getElementById('ranking-position').textContent = `#${position}`;
+      document.getElementById('ranking-context').textContent = `de ${eventMerchants.length} comerciants`;
+      const barPct = Math.round(((eventMerchants.length - position + 1) / eventMerchants.length) * 100);
+      document.getElementById('ranking-bar').style.width = `${barPct}%`;
+
+      // Bar chart (fake daily visits over 18 days)
+      renderBarChart(visits);
+
+      // Page title
+      document.title = `${merchant.name} – Panel del Comerciant`;
+    }
+
+    function animateCounter(elementId, target) {
+      const el = document.getElementById(elementId);
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 30));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current;
+      }, 30);
+    }
+
+    function renderBarChart(totalVisits) {
+      const container = document.getElementById('bar-chart');
+      const days = 18;
+      const bars = [];
+
+      // Generate realistic daily distribution (bell curve-ish with noise)
+      let sum = 0;
+      for (let i = 0; i < days; i++) {
+        const base = Math.sin((i / days) * Math.PI) * 0.7 + 0.3;
+        const noise = 0.7 + Math.random() * 0.6;
+        bars.push(base * noise);
+        sum += base * noise;
+      }
+
+      // Normalize to total visits
+      const maxVal = Math.max(...bars);
+
+      container.innerHTML = bars.map((val, i) => {
+        const height = Math.round((val / maxVal) * 100);
+        const actual = Math.round((val / sum) * totalVisits);
+        return `<div class="bar-wrapper" title="Dia ${i + 1}: ~${actual} visites">
+          <div class="bar" style="height: ${height}%"></div>
+        </div>`;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

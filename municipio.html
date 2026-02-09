@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel del Promotor – L'Hospitalet Turisme</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <link rel="stylesheet" href="assets/css/panel.css" />
+</head>
+<body>
+  <div class="panel-container">
+    <!-- Header -->
+    <header class="panel-header">
+      <a href="index.html" class="back-link">← Tornar al mapa</a>
+      <div class="panel-badge">🏛️ Panel del Promotor</div>
+    </header>
+
+    <!-- Loading -->
+    <div id="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Carregant dades...</p>
+    </div>
+
+    <!-- Content -->
+    <main id="content" class="panel-content hidden">
+      <!-- Municipality identity -->
+      <section class="identity-card">
+        <img src="https://hospitaletturisme.l-h.cat/img/logo_LHTurisme.png" alt="L'Hospitalet Turisme" class="identity-logo">
+        <p class="identity-address">Àrea de Ciutat Transformadora</p>
+      </section>
+
+      <!-- Global metrics -->
+      <section class="section-title">
+        <h3>Impacte Digital Global</h3>
+        <p class="section-subtitle">Tots els esdeveniments</p>
+      </section>
+
+      <section class="metrics-grid">
+        <div class="metric-card metric-highlight">
+          <div class="metric-icon">🎉</div>
+          <div class="metric-value" id="metric-events">0</div>
+          <div class="metric-label">esdeveniments actius</div>
+        </div>
+        <div class="metric-card metric-highlight">
+          <div class="metric-icon">🏪</div>
+          <div class="metric-value" id="metric-merchants">0</div>
+          <div class="metric-label">establiments connectats</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">👥</div>
+          <div class="metric-value" id="metric-unique-visits">0</div>
+          <div class="metric-label">visites úniques</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🗺️</div>
+          <div class="metric-value" id="metric-route-clicks">0</div>
+          <div class="metric-label">clics en "Ruta"</div>
+        </div>
+      </section>
+
+      <!-- Interaction rate -->
+      <section class="rate-card">
+        <div class="rate-header">
+          <span class="rate-icon">📈</span>
+          <span class="rate-label">Taxa d'interacció global</span>
+        </div>
+        <div class="rate-value" id="rate-value">0%</div>
+        <div class="rate-bar-container">
+          <div class="rate-bar" id="rate-bar"></div>
+        </div>
+        <p class="rate-explanation">Percentatge de visitants que van interactuar amb un perfil</p>
+      </section>
+
+      <!-- Event selector -->
+      <section class="section-title">
+        <h3>Detall per Esdeveniment</h3>
+      </section>
+
+      <div class="event-selector" id="event-selector">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Event detail (changes with tab selection) -->
+      <div id="event-detail">
+        <!-- Event info -->
+        <section class="event-context" id="event-context">
+        </section>
+
+        <!-- Event metrics -->
+        <section class="metrics-grid" id="event-metrics">
+        </section>
+
+        <!-- Top merchants -->
+        <section class="section-title">
+          <h3>Top Participants</h3>
+        </section>
+
+        <section class="top-list" id="top-list">
+        </section>
+
+        <!-- Category breakdown -->
+        <section class="section-title">
+          <h3>Distribució per tags</h3>
+        </section>
+
+        <section class="tags-breakdown" id="tags-breakdown">
+        </section>
+
+        <!-- Daily chart -->
+        <section class="chart-card">
+          <h3>Visites per dia (simulació)</h3>
+          <div class="bar-chart" id="bar-chart"></div>
+          <div class="chart-legend" id="chart-legend">
+          </div>
+        </section>
+      </div>
+
+      <!-- Comparison -->
+      <section class="comparison-card">
+        <div class="comparison-icon">🚀</div>
+        <div class="comparison-text">
+          <span class="comparison-value">Primera edició digital</span>
+          <span class="comparison-label">Abans d'aquesta plataforma, no existien dades digitals d'impacte dels esdeveniments locals</span>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <p class="cta-text">Vols repetir amb el pròxim esdeveniment?</p>
+        <button class="btn-cta" onclick="alert('Funció disponible properament!')">Sol·licitar pilot</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let allData = null;
+
+    (async function() {
+      try {
+        const resp = await fetch('assets/data/merchants.json');
+        allData = await resp.json();
+        render(allData);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('loading').querySelector('p').textContent = 'Error carregant dades';
+      }
+    })();
+
+    function render(data) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('content').classList.remove('hidden');
+
+      const events = data.events;
+      const allMerchants = events.flatMap(e => e.merchants);
+      const totalVisits = allMerchants.reduce((sum, m) => sum + m.stats.visits, 0);
+      const totalRoutes = allMerchants.reduce((sum, m) => sum + m.stats.routes, 0);
+      const uniqueVisits = data.meta.total_visits_today;
+
+      // Global metrics
+      animateCounter('metric-events', events.length);
+      animateCounter('metric-merchants', allMerchants.length);
+      animateCounter('metric-unique-visits', uniqueVisits);
+      animateCounter('metric-route-clicks', totalRoutes);
+
+      // Global interaction rate
+      const rate = Math.round((totalVisits / uniqueVisits) * 100);
+      document.getElementById('rate-value').textContent = `${rate}%`;
+      document.getElementById('rate-bar').style.width = `${Math.min(rate, 100)}%`;
+
+      // Event selector
+      renderEventSelector(events);
+
+      // Show first event by default
+      selectEvent(events[0]);
+    }
+
+    function renderEventSelector(events) {
+      const container = document.getElementById('event-selector');
+
+      container.innerHTML = `
+        <div class="card-select" id="card-select">
+          <div class="card-select-trigger" id="card-select-trigger">
+            <div class="card-select-info">
+              <span class="card-select-name" id="card-select-name"></span>
+              <span class="card-select-meta" id="card-select-meta"></span>
+            </div>
+            <span class="card-select-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+          </div>
+          <div class="card-select-dropdown" id="card-select-dropdown">
+            ${events.map(evt => `
+              <div class="card-select-option" data-event-id="${evt.id}">
+                <span class="card-select-dot" style="background:${evt.color}"></span>
+                <div class="card-select-option-info">
+                  <span class="card-select-option-name">${evt.name}</span>
+                  <span class="card-select-option-meta">${evt.merchants.length} participants · ${evt.edition}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      const trigger = document.getElementById('card-select-trigger');
+      const dropdown = document.getElementById('card-select-dropdown');
+      const wrapper = document.getElementById('card-select');
+
+      trigger.addEventListener('click', () => {
+        wrapper.classList.toggle('open');
+      });
+
+      dropdown.querySelectorAll('.card-select-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const evt = allData.events.find(e => e.id === opt.dataset.eventId);
+          if (evt) {
+            selectEvent(evt);
+            setCardSelectValue(evt);
+            wrapper.classList.remove('open');
+          }
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) wrapper.classList.remove('open');
+      });
+
+      // Set initial value
+      setCardSelectValue(events[0]);
+    }
+
+    function setCardSelectValue(evt) {
+      const wrapper = document.getElementById('card-select');
+      wrapper.style.setProperty('--select-color', evt.color);
+      document.getElementById('card-select-name').textContent = evt.name;
+      document.getElementById('card-select-meta').textContent = `${evt.merchants.length} participants · ${evt.edition}`;
+
+      wrapper.querySelectorAll('.card-select-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.eventId === evt.id);
+      });
+    }
+
+    function selectEvent(evt) {
+
+      // Event context
+      const ctx = document.getElementById('event-context');
+      ctx.innerHTML = `
+        <div class="event-context-row">
+          <span class="event-context-color" style="background:${evt.color}"></span>
+          <div>
+            <h2>${evt.icon} ${evt.name}</h2>
+            <p class="event-dates">${evt.edition} · ${evt.dates.start} – ${evt.dates.end}</p>
+            <p class="event-dates">${evt.location}</p>
+          </div>
+        </div>
+      `;
+
+      // Event-specific metrics
+      const merchants = evt.merchants;
+      const visits = merchants.reduce((s, m) => s + m.stats.visits, 0);
+      const routes = merchants.reduce((s, m) => s + m.stats.routes, 0);
+
+      const metricsEl = document.getElementById('event-metrics');
+      metricsEl.innerHTML = `
+        <div class="metric-card">
+          <div class="metric-icon">🏪</div>
+          <div class="metric-value">${merchants.length}</div>
+          <div class="metric-label">participants</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">👀</div>
+          <div class="metric-value">${visits.toLocaleString('ca-ES')}</div>
+          <div class="metric-label">visites a perfils</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🗺️</div>
+          <div class="metric-value">${routes.toLocaleString('ca-ES')}</div>
+          <div class="metric-label">clics en ruta</div>
+        </div>
+      `;
+
+      // Top merchants
+      renderTopMerchants(merchants, evt.color);
+
+      // Tags
+      renderTagsBreakdown(merchants);
+
+      // Chart
+      renderBarChart(visits, evt);
+    }
+
+    function animateCounter(elementId, target) {
+      const el = document.getElementById(elementId);
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 30));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current.toLocaleString('ca-ES');
+      }, 30);
+    }
+
+    function renderTopMerchants(merchants, color) {
+      const sorted = [...merchants].sort((a, b) => b.stats.visits - a.stats.visits);
+      const top = sorted.slice(0, 5);
+      const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+      const maxVisits = top[0] ? top[0].stats.visits : 1;
+
+      const container = document.getElementById('top-list');
+      container.innerHTML = top.map((m, i) => {
+        const barPct = Math.round((m.stats.visits / maxVisits) * 100);
+        return `
+          <div class="top-item">
+            <div class="top-rank">${medals[i]}</div>
+            <div class="top-info">
+              <div class="top-name">${m.name}</div>
+              <div class="top-stats">${m.stats.visits} visites · ${m.stats.routes} rutes</div>
+              <div class="top-bar-container">
+                <div class="top-bar" style="width: ${barPct}%; background: ${color}"></div>
+              </div>
+            </div>
+            <a href="comerciante.html?id=${m.id}" class="top-link" title="Veure detall">→</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTagsBreakdown(merchants) {
+      const tagCounts = {};
+      merchants.forEach(m => {
+        m.tags.forEach(t => {
+          tagCounts[t] = (tagCounts[t] || 0) + 1;
+        });
+      });
+
+      const tagLabels = {
+        'sense-gluten': 'Sense gluten',
+        'vegetariana': 'Vegetariana',
+        'per-emportar': 'Per emportar'
+      };
+
+      const container = document.getElementById('tags-breakdown');
+      const entries = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+
+      if (entries.length === 0) {
+        container.innerHTML = '<p class="no-data">Cap tag registrat</p>';
+        return;
+      }
+
+      container.innerHTML = entries.map(([tag, count]) => {
+        const pct = Math.round((count / merchants.length) * 100);
+        return `
+          <div class="tag-row">
+            <span class="tag-name">🏷️ ${tagLabels[tag] || tag}</span>
+            <span class="tag-count">${count} participants (${pct}%)</span>
+            <div class="tag-bar-container">
+              <div class="tag-bar" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBarChart(totalVisits, evt) {
+      const container = document.getElementById('bar-chart');
+      const start = new Date(evt.dates.start);
+      const end = new Date(evt.dates.end);
+      const days = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
+      const bars = [];
+
+      let sum = 0;
+      for (let i = 0; i < days; i++) {
+        const base = Math.sin((i / days) * Math.PI) * 0.7 + 0.3;
+        const noise = 0.7 + Math.random() * 0.6;
+        bars.push(base * noise);
+        sum += base * noise;
+      }
+
+      const maxVal = Math.max(...bars);
+
+      container.innerHTML = bars.map((val, i) => {
+        const height = Math.round((val / maxVal) * 100);
+        const actual = Math.round((val / sum) * totalVisits);
+        return `<div class="bar-wrapper" title="Dia ${i + 1}: ~${actual} visites">
+          <div class="bar" style="height: ${height}%; background: ${evt.color}"></div>
+        </div>`;
+      }).join('');
+
+      // Legend
+      const legend = document.getElementById('chart-legend');
+      const startStr = start.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+      const endStr = end.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+      legend.innerHTML = `
+        <span class="chart-label-start">${startStr}</span>
+        <span class="chart-label-end">${endStr}</span>
+      `;
+    }
+  </script>
+</body>
+</html>

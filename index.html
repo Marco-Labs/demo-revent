@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A la tardor, platillos – Ruta Gastronòmica de L'Hospitalet</title>
+  <meta name="description" content="Mapa interactiu de la ruta gastronòmica del Centenari a L'Hospitalet de Llobregat">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="A la tardor, platillos – Mapa interactiu">
+  <meta property="og:description" content="Descobreix la ruta gastronòmica del Centenari a L'Hospitalet de Llobregat. 28 comerciants, platillo + beguda per 4,50€.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ca_ES">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <!-- App CSS -->
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <!-- Event Header -->
+      <header id="event-header">
+        <img src="https://hospitaletturisme.l-h.cat/img/logo_LHTurisme.png" alt="L'Hospitalet Turisme" class="header-logo">
+        <p id="header-subtitle">Esdeveniments en viu</p>
+        <div id="event-divider"></div>
+        <div id="event-stats">
+          <div class="stat-row stat-live">
+            <span class="stat-icon">🔴</span>
+            <span><strong id="explorers-count">8</strong> persones explorant ara</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">👀</span>
+            <span><strong id="visits-count">1.247</strong> visites avui</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">⏰</span>
+            <span><strong id="open-count">0</strong> establiments oberts</span>
+          </div>
+        </div>
+        <a href="municipio.html" class="panel-link" id="link-municipio">🏛️ Panel del Promotor →</a>
+      </header>
+
+      <!-- Merchant List -->
+      <div id="merchant-list-container">
+        <div id="merchant-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <main id="map-container">
+      <div id="map"></div>
+      <!-- Loading overlay -->
+      <div id="map-loading">
+        <div class="loading-spinner"></div>
+        <p>Carregant mapa...</p>
+      </div>
+    </main>
+
+    <!-- Expanded Card (hover on marker) -->
+    <div id="merchant-card" class="merchant-card hidden">
+      <div class="card-photo" id="card-photo"></div>
+      <div class="card-content">
+        <div class="card-badge" id="card-badge"></div>
+        <h3 class="card-name" id="card-name"></h3>
+        <div class="card-divider"></div>
+        <p class="card-dish" id="card-dish"></p>
+        <p class="card-price" id="card-price"></p>
+        <p class="card-address" id="card-address"></p>
+        <p class="card-status" id="card-status"></p>
+        <div class="card-tags" id="card-tags"></div>
+        <div class="card-actions">
+          <button class="btn btn-secondary" id="card-btn-detail">Veure més</button>
+          <button class="btn btn-primary" id="card-btn-route">🗺️ Ruta →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div id="modal-panel" class="modal-panel">
+        <div class="modal-header">
+          <button class="modal-back" id="modal-back">← Tornar</button>
+          <button class="modal-close" id="modal-close">✕</button>
+        </div>
+        <div class="modal-photo" id="modal-photo">
+          <div class="photo-placeholder">📷</div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-event-badge" id="modal-event-badge"></div>
+          <h2 class="modal-name" id="modal-name"></h2>
+          <div class="modal-divider"></div>
+          <div class="modal-dish-section">
+            <p class="modal-dish-icon">🍽️</p>
+            <h3 class="modal-dish" id="modal-dish"></h3>
+            <p class="modal-dish-desc" id="modal-dish-desc"></p>
+          </div>
+          <p class="modal-price" id="modal-price"></p>
+          <div class="modal-info">
+            <p class="modal-address" id="modal-address"></p>
+            <div class="modal-hours" id="modal-hours"></div>
+            <p class="modal-status" id="modal-status"></p>
+          </div>
+          <div class="modal-tags" id="modal-tags"></div>
+          <button class="btn btn-primary btn-large" id="modal-btn-route">🗺️ Com arribar-hi</button>
+          <a class="btn btn-secondary btn-large modal-btn-stats" id="modal-btn-stats" style="margin-top:8px;display:block;text-align:center;text-decoration:none;">📊 Veure estadístiques</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet MarkerCluster JS -->
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <!-- Turf.js for geospatial operations -->
+  <script src="https://unpkg.com/@turf/turf@7/turf.min.js"></script>
+  <!-- App JS -->
+  <script src="assets/js/signals.js"></script>
+  <script src="assets/js/map.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
