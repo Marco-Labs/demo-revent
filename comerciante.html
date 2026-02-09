@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel del Comerciant – A la tardor, platillos</title>
+  <title>Panel del Comerciant – Revent</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
   <link rel="stylesheet" href="assets/css/panel.css" />
 </head>
@@ -12,7 +12,7 @@
     <!-- Header -->
     <header class="panel-header">
       <a href="index.html" class="back-link">← Tornar al mapa</a>
-      <div class="panel-badge">🏪 Panel del Comerciant</div>
+      <div class="panel-badge">Panel del Comerciant</div>
     </header>
 
     <!-- Loading -->
@@ -33,14 +33,13 @@
         <h1 id="merchant-name"></h1>
         <p class="identity-address" id="merchant-address"></p>
         <div class="identity-dish">
-          <span class="dish-icon">🍽️</span>
           <span id="merchant-dish"></span>
         </div>
       </section>
 
       <!-- Event context -->
       <section class="event-context">
-        <p class="event-label">📊 Esdeveniment</p>
+        <p class="event-label">Esdeveniment</p>
         <h2 id="event-name"></h2>
         <p class="event-dates" id="event-dates"></p>
       </section>
@@ -48,17 +47,14 @@
       <!-- Key metrics -->
       <section class="metrics-grid">
         <div class="metric-card metric-highlight">
-          <div class="metric-icon">👀</div>
           <div class="metric-value" id="metric-visits">0</div>
           <div class="metric-label">persones van mirar el teu perfil</div>
         </div>
         <div class="metric-card metric-highlight">
-          <div class="metric-icon">🗺️</div>
           <div class="metric-value" id="metric-routes">0</div>
           <div class="metric-label">van prendre ruta cap al teu local</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon">📈</div>
           <div class="metric-value" id="metric-conversion">0%</div>
           <div class="metric-label">taxa de conversió</div>
         </div>
@@ -66,7 +62,7 @@
 
       <!-- Comparison -->
       <section class="comparison-card">
-        <div class="comparison-icon">🔥</div>
+        <div class="comparison-icon">🚀</div>
         <div class="comparison-text">
           <span class="comparison-value" id="comparison-value">+0%</span>
           <span class="comparison-label">visibilitat digital respecte a esdeveniments anteriors</span>
@@ -151,7 +147,7 @@
 
       // Identity
       document.getElementById('merchant-name').textContent = merchant.name;
-      document.getElementById('merchant-address').textContent = merchant.address;
+      document.getElementById('merchant-address').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${merchant.address}`;
       document.getElementById('merchant-dish').textContent = `${merchant.dish.name} · ${merchant.dish.price}`;
 
       // Event

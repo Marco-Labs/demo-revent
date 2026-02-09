@@ -27,9 +27,11 @@ const App = (() => {
         MapModule.addMerchants(evt.merchants, evt.color);
         MapModule.drawInfluenceZone(evt.merchants, evt.color);
       });
+      MapModule.fitToMarkers();
 
       renderGlobalStats(data);
       renderEventSections(events);
+      lucide.createIcons();
       updateOpenCount();
       startLiveCounters();
       startRippleLoop();
@@ -68,8 +70,8 @@ const App = (() => {
       const merchantsHtml = evt.merchants.map(m => {
         const status = Signals.getOpenStatus(m, now);
         const popularity = Signals.getPopularity(m.stats.visits);
-        const popularBadge = popularity.icon
-          ? `<span class="merchant-popular-badge">${popularity.icon} ${popularity.level === 'very-popular' ? 'Molt popular' : 'Popular'}</span>`
+        const popularBadge = popularity.level !== 'normal'
+          ? `<span class="merchant-popular-badge">${popularity.level === 'very-popular' ? 'Molt popular' : 'Popular'}</span>`
           : '';
 
         return `
@@ -83,7 +85,7 @@ const App = (() => {
                   ${popularBadge}
                 </div>
                 <p class="merchant-dish">${m.dish.name}${m.dish.price ? ' · ' + m.dish.price : ''}</p>
-                <p class="merchant-address">${m.address}</p>
+                <p class="merchant-address"><i data-lucide="map-pin" class="lucide-sm"></i> ${m.address}</p>
                 <p class="merchant-status ${status.status}">${Signals.getStatusBadge(status)}</p>
               </div>
             </div>
@@ -215,7 +217,7 @@ const App = (() => {
       const status = Signals.getOpenStatus(merchant, now);
       const statusEl = item.querySelector('.merchant-status');
       statusEl.className = `merchant-status ${status.status}`;
-      statusEl.textContent = Signals.getStatusBadge(status);
+      statusEl.innerHTML = Signals.getStatusBadge(status);
     });
   }
 
@@ -244,7 +246,7 @@ const App = (() => {
 
     // Photo
     const photoEl = document.getElementById('modal-photo');
-    photoEl.innerHTML = `<img src="assets/images/merchants/${merchant.id}.png" alt="${merchant.name}" class="modal-photo-img" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'>${evt ? evt.icon : '📷'}</div>'">`;
+    photoEl.innerHTML = `<img src="assets/images/merchants/${merchant.id}.png" alt="${merchant.name}" class="modal-photo-img" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'><i data-lucide=\\'image\\' class=\\'lucide-lg\\'></i></div>';lucide.createIcons()">`;
 
     // Event badge on modal
     const modalEventBadge = document.getElementById('modal-event-badge');
@@ -253,11 +255,10 @@ const App = (() => {
     }
 
     document.getElementById('modal-name').textContent = merchant.name;
-    document.getElementById('modal-dish').textContent = merchant.dish.name;
+    document.getElementById('modal-dish').textContent = merchant.dish.name + (merchant.dish.price ? ' · ' + merchant.dish.price : '');
     document.getElementById('modal-dish-desc').textContent = merchant.dish.description;
-    document.getElementById('modal-price').textContent = merchant.dish.price || '';
-    document.getElementById('modal-address').textContent = merchant.address;
-    document.getElementById('modal-status').textContent = Signals.getStatusBadge(status);
+    document.getElementById('modal-address').innerHTML = `<i data-lucide="map-pin" class="lucide-sm"></i> ${merchant.address}`;
+    document.getElementById('modal-status').innerHTML = Signals.getStatusBadge(status);
     document.getElementById('modal-status').className = `modal-status ${status.status}`;
 
     // Weekly hours
@@ -277,7 +278,7 @@ const App = (() => {
     // Tags
     const tagsEl = document.getElementById('modal-tags');
     tagsEl.innerHTML = merchant.tags.map(t =>
-      `<span class="modal-tag">🏷️ ${Signals.getTagLabel(t)}</span>`
+      `<span class="modal-tag">${Signals.getTagLabel(t)}</span>`
     ).join('');
 
     // Route button
@@ -292,6 +293,7 @@ const App = (() => {
     // Show modal
     const overlay = document.getElementById('modal-overlay');
     overlay.classList.remove('hidden');
+    lucide.createIcons();
 
     // Close handlers
     document.getElementById('modal-close').onclick = closeModal;
@@ -303,6 +305,8 @@ const App = (() => {
 
   function closeModal() {
     document.getElementById('modal-overlay').classList.add('hidden');
+    resetListStates();
+    MapModule.resetAllStates();
   }
 
   // ESC key to close modal

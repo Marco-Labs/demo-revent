@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A la tardor, platillos – Ruta Gastronòmica de L'Hospitalet</title>
-  <meta name="description" content="Mapa interactiu de la ruta gastronòmica del Centenari a L'Hospitalet de Llobregat">
+  <title>Revent – Esdeveniments en viu</title>
+  <meta name="description" content="Revent: el gemelo digital del ocio local. Descobreix esdeveniments en viu a L'Hospitalet de Llobregat.">
 
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="A la tardor, platillos – Mapa interactiu">
-  <meta property="og:description" content="Descobreix la ruta gastronòmica del Centenari a L'Hospitalet de Llobregat. 28 comerciants, platillo + beguda per 4,50€.">
+  <meta property="og:title" content="Revent – Esdeveniments en viu">
+  <meta property="og:description" content="Revent: el gemelo digital del ocio local. Descobreix esdeveniments en viu a L'Hospitalet de Llobregat.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ca_ES">
 
@@ -34,19 +34,19 @@
         <div id="event-divider"></div>
         <div id="event-stats">
           <div class="stat-row stat-live">
-            <span class="stat-icon">🔴</span>
+            <span class="stat-icon"><i data-lucide="radio" class="lucide-sm"></i></span>
             <span><strong id="explorers-count">8</strong> persones explorant ara</span>
           </div>
           <div class="stat-row">
-            <span class="stat-icon">👀</span>
+            <span class="stat-icon"><i data-lucide="eye" class="lucide-sm"></i></span>
             <span><strong id="visits-count">1.247</strong> visites avui</span>
           </div>
           <div class="stat-row">
-            <span class="stat-icon">⏰</span>
+            <span class="stat-icon"><i data-lucide="clock" class="lucide-sm"></i></span>
             <span><strong id="open-count">0</strong> establiments oberts</span>
           </div>
         </div>
-        <a href="municipio.html" class="panel-link" id="link-municipio">🏛️ Panel del Promotor →</a>
+        <a href="municipio.html" class="panel-link" id="link-municipio">Panel del Promotor</a>
       </header>
 
       <!-- Merchant List -->
@@ -75,13 +75,12 @@
         <h3 class="card-name" id="card-name"></h3>
         <div class="card-divider"></div>
         <p class="card-dish" id="card-dish"></p>
-        <p class="card-price" id="card-price"></p>
         <p class="card-address" id="card-address"></p>
         <p class="card-status" id="card-status"></p>
         <div class="card-tags" id="card-tags"></div>
         <div class="card-actions">
           <button class="btn btn-secondary" id="card-btn-detail">Veure més</button>
-          <button class="btn btn-primary" id="card-btn-route">🗺️ Ruta →</button>
+          <button class="btn btn-primary" id="card-btn-route">Ruta <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:2px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
         </div>
       </div>
     </div>
@@ -94,30 +93,35 @@
           <button class="modal-close" id="modal-close">✕</button>
         </div>
         <div class="modal-photo" id="modal-photo">
-          <div class="photo-placeholder">📷</div>
+          <div class="photo-placeholder"><i data-lucide="image" class="lucide-lg"></i></div>
         </div>
         <div class="modal-body">
           <div class="modal-event-badge" id="modal-event-badge"></div>
           <h2 class="modal-name" id="modal-name"></h2>
           <div class="modal-divider"></div>
           <div class="modal-dish-section">
-            <p class="modal-dish-icon">🍽️</p>
             <h3 class="modal-dish" id="modal-dish"></h3>
             <p class="modal-dish-desc" id="modal-dish-desc"></p>
           </div>
-          <p class="modal-price" id="modal-price"></p>
+          <div class="modal-divider"></div>
           <div class="modal-info">
             <p class="modal-address" id="modal-address"></p>
+          </div>
+          <div class="modal-divider"></div>
+          <div class="modal-info">
             <div class="modal-hours" id="modal-hours"></div>
             <p class="modal-status" id="modal-status"></p>
           </div>
           <div class="modal-tags" id="modal-tags"></div>
-          <button class="btn btn-primary btn-large" id="modal-btn-route">🗺️ Com arribar-hi</button>
-          <a class="btn btn-secondary btn-large modal-btn-stats" id="modal-btn-stats" style="margin-top:8px;display:block;text-align:center;text-decoration:none;">📊 Veure estadístiques</a>
+          <button class="btn btn-primary btn-large" id="modal-btn-route">Com arribar-hi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-left:4px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+          <a class="btn btn-secondary btn-large modal-btn-stats" id="modal-btn-stats" style="margin-top:8px;display:block;text-align:center;text-decoration:none;">Panel del comerciant</a>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -129,5 +133,6 @@
   <script src="assets/js/signals.js"></script>
   <script src="assets/js/map.js"></script>
   <script src="assets/js/app.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

@@ -84,8 +84,8 @@ const Signals = (() => {
    * Get popularity level based on visits.
    */
   function getPopularity(visits) {
-    if (visits > 40) return { level: 'very-popular', label: '🔥 Molt popular', icon: '🔥' };
-    if (visits > 20) return { level: 'popular', label: '⭐ Popular', icon: '' };
+    if (visits > 40) return { level: 'very-popular', label: 'Molt popular', icon: '' };
+    if (visits > 20) return { level: 'popular', label: 'Popular', icon: '' };
     return { level: 'normal', label: '', icon: '' };
   }
 
@@ -114,13 +114,8 @@ const Signals = (() => {
    * Format status badge for list item.
    */
   function getStatusBadge(status) {
-    const icons = {
-      'open': '🟢',
-      'closing-soon': '🟠',
-      'opening-soon': '🔶',
-      'closed': '⚪'
-    };
-    return `${icons[status.status] || '⚪'} ${status.label}`;
+    const dotClass = `dot-${status.status}`;
+    return `<span class="status-dot ${dotClass}"></span>${status.label}`;
   }
 
   /**

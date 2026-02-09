@@ -1,3 +1,30 @@
+/* ===== Lucide icons ===== */
+.lucide-sm { width: 16px; height: 16px; }
+.lucide-md { width: 20px; height: 20px; }
+.lucide-lg { width: 32px; height: 32px; }
+.lucide-sm, .lucide-md, .lucide-lg { vertical-align: -2px; }
+
+/* Status dots (replacing emoji circles) */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  margin-right: 4px;
+}
+
+.status-dot.dot-open { background: #4CAF50; }
+.status-dot.dot-closing-soon { background: #F44336; }
+.status-dot.dot-opening-soon { background: #FF9800; }
+.status-dot.dot-closed { background: #BDBDBD; }
+
+.stat-live .status-dot { animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* ===== Reset & Base ===== */
 *, *::before, *::after {
   margin: 0;
@@ -653,16 +680,9 @@ html, body {
 
 .card-dish {
   font-size: 14px;
-  font-weight: 600;
   color: var(--primary);
+  margin-top: 3px;
   line-height: 1.3;
-}
-
-.card-price {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-top: 4px;
 }
 
 .card-address {
@@ -671,7 +691,6 @@ html, body {
   margin-top: 8px;
 }
 
-.card-address::before { content: '📍 '; }
 
 .card-status {
   font-size: 14px;
@@ -732,13 +751,13 @@ html, body {
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(255, 107, 0, 0.08);
   color: var(--primary);
-  border: 1.5px solid var(--primary);
+  border: none;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 107, 0, 0.08);
+  background: rgba(255, 107, 0, 0.15);
 }
 
 .btn-large {
@@ -896,7 +915,6 @@ html, body {
   color: var(--text-medium);
 }
 
-.modal-address::before { content: '📍 '; }
 
 .modal-hours {
   margin-top: 8px;

@@ -9,7 +9,7 @@ const MapModule = (() => {
   let cardHideTimeout = null;
 
   const CENTER = [41.3594, 2.1056];
-  const ZOOM_INITIAL = 14;
+  const ZOOM_INITIAL = 13;
   const ZOOM_MIN = 12;
   const ZOOM_MAX = 18;
 
@@ -32,6 +32,7 @@ const MapModule = (() => {
     // Click on empty map area -> reset
     map.on('click', () => {
       resetAllStates();
+      App.closeModal();
     });
 
     clusterGroup = L.markerClusterGroup({
@@ -63,8 +64,8 @@ const MapModule = (() => {
         const merchant = findMerchantByLatLng(latlng);
         if (!merchant) return null;
         const status = Signals.getOpenStatus(merchant, now);
-        const icon = status.status === 'open' || status.status === 'closing-soon' ? '🟢' : '⚪';
-        return `<div class="cluster-tooltip-item">${icon} ${merchant.name}</div>`;
+        const dotClass = (status.status === 'open' || status.status === 'closing-soon') ? 'dot-open' : 'dot-closed';
+        return `<div class="cluster-tooltip-item"><span class="status-dot ${dotClass}"></span>${merchant.name}</div>`;
       }).filter(Boolean);
 
       const html = `
@@ -144,6 +145,7 @@ const MapModule = (() => {
     marker.on('click', (e) => {
       L.DomEvent.stopPropagation(e);
       setActive(merchant.id);
+      App.setActiveItem(merchant.id);
       panTo(merchant.id, true);
       App.openModal(merchant);
     });
@@ -157,6 +159,16 @@ const MapModule = (() => {
    */
   function addMerchants(merchantList, eventColor) {
     merchantList.forEach(m => createMarker(m, eventColor));
+  }
+
+  /**
+   * Fit map to the bounds of all current markers with padding.
+   */
+  function fitToMarkers() {
+    const bounds = clusterGroup.getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
   }
 
   /**
@@ -253,22 +265,22 @@ const MapModule = (() => {
     // Fill card content
     const badgeEl = document.getElementById('card-badge');
     if (popularity.icon) {
-      badgeEl.innerHTML = `<span class="merchant-popular-badge">${popularity.icon} ${popularity.level === 'very-popular' ? 'Molt popular' : 'Popular'}</span>`;
+      badgeEl.innerHTML = `<span class="merchant-popular-badge">${popularity.level === 'very-popular' ? 'Molt popular' : 'Popular'}</span>`;
     } else {
       badgeEl.innerHTML = '';
     }
     document.getElementById('card-name').textContent = merchant.name;
-    document.getElementById('card-dish').textContent = merchant.dish.name;
-    document.getElementById('card-price').textContent = merchant.dish.price || '';
-    document.getElementById('card-address').textContent = merchant.address;
+    document.getElementById('card-dish').textContent = merchant.dish.name + (merchant.dish.price ? ' · ' + merchant.dish.price : '');
+    document.getElementById('card-address').innerHTML = `<i data-lucide="map-pin" class="lucide-sm"></i> ${merchant.address}`;
+    lucide.createIcons({ attrs: { class: 'lucide-sm' }, nameAttr: 'data-lucide' });
     const statusEl = document.getElementById('card-status');
-    statusEl.textContent = Signals.getStatusBadge(status);
+    statusEl.innerHTML = Signals.getStatusBadge(status);
     statusEl.className = `card-status ${status.status}`;
 
     // Tags
     const tagsEl = document.getElementById('card-tags');
     tagsEl.innerHTML = merchant.tags.map(t =>
-      `<span class="card-tag">🏷️ ${Signals.getTagLabel(t)}</span>`
+      `<span class="card-tag">${Signals.getTagLabel(t)}</span>`
     ).join('');
 
     // Buttons
@@ -492,6 +504,7 @@ const MapModule = (() => {
   return {
     init,
     addMerchants,
+    fitToMarkers,
     panTo,
     setActive,
     resetAllStates,

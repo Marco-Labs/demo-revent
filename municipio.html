@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel del Promotor – L'Hospitalet Turisme</title>
+  <title>Panel del Promotor – Revent</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
   <link rel="stylesheet" href="assets/css/panel.css" />
 </head>
@@ -12,7 +12,7 @@
     <!-- Header -->
     <header class="panel-header">
       <a href="index.html" class="back-link">← Tornar al mapa</a>
-      <div class="panel-badge">🏛️ Panel del Promotor</div>
+      <div class="panel-badge">Panel del Promotor</div>
     </header>
 
     <!-- Loading -->
@@ -37,22 +37,18 @@
 
       <section class="metrics-grid">
         <div class="metric-card metric-highlight">
-          <div class="metric-icon">🎉</div>
           <div class="metric-value" id="metric-events">0</div>
           <div class="metric-label">esdeveniments actius</div>
         </div>
         <div class="metric-card metric-highlight">
-          <div class="metric-icon">🏪</div>
           <div class="metric-value" id="metric-merchants">0</div>
           <div class="metric-label">establiments connectats</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon">👥</div>
           <div class="metric-value" id="metric-unique-visits">0</div>
           <div class="metric-label">visites úniques</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon">🗺️</div>
           <div class="metric-value" id="metric-route-clicks">0</div>
           <div class="metric-label">clics en "Ruta"</div>
         </div>
@@ -61,7 +57,6 @@
       <!-- Interaction rate -->
       <section class="rate-card">
         <div class="rate-header">
-          <span class="rate-icon">📈</span>
           <span class="rate-label">Taxa d'interacció global</span>
         </div>
         <div class="rate-value" id="rate-value">0%</div>
@@ -264,17 +259,14 @@
       const metricsEl = document.getElementById('event-metrics');
       metricsEl.innerHTML = `
         <div class="metric-card">
-          <div class="metric-icon">🏪</div>
           <div class="metric-value">${merchants.length}</div>
           <div class="metric-label">participants</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon">👀</div>
           <div class="metric-value">${visits.toLocaleString('ca-ES')}</div>
           <div class="metric-label">visites a perfils</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon">🗺️</div>
           <div class="metric-value">${routes.toLocaleString('ca-ES')}</div>
           <div class="metric-label">clics en ruta</div>
         </div>
@@ -355,7 +347,7 @@
         const pct = Math.round((count / merchants.length) * 100);
         return `
           <div class="tag-row">
-            <span class="tag-name">🏷️ ${tagLabels[tag] || tag}</span>
+            <span class="tag-name">${tagLabels[tag] || tag}</span>
             <span class="tag-count">${count} participants (${pct}%)</span>
             <div class="tag-bar-container">
               <div class="tag-bar" style="width: ${pct}%"></div>
