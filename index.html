@@ -3,136 +3,304 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revent – Esdeveniments en viu</title>
-  <meta name="description" content="Revent: el gemelo digital del ocio local. Descobreix esdeveniments en viu a L'Hospitalet de Llobregat.">
+  <title>Revent – Demos</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF6B00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m11 19-1.106-.552a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0l4.212 2.106a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619V12'/><path d='M15 5.764V12'/><path d='M18 15v6'/><path d='M21 18h-6'/><path d='M9 3.236v15'/></svg>">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F5F5;
+      color: #212121;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Revent – Esdeveniments en viu">
-  <meta property="og:description" content="Revent: el gemelo digital del ocio local. Descobreix esdeveniments en viu a L'Hospitalet de Llobregat.">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="ca_ES">
+    header {
+      background: #fff;
+      border-bottom: 1px solid #E0E0E0;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Leaflet MarkerCluster CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-  <!-- App CSS -->
-  <link rel="stylesheet" href="assets/css/styles.css" />
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: #FF6B00;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg { width: 18px; height: 18px; }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #212121;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span { color: #FF6B00; }
+
+    .header-tag {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      color: #9E9E9E;
+      background: #F5F5F5;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    main {
+      flex: 1;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #212121;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #616161;
+      margin-bottom: 36px;
+    }
+
+    .demos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .demo-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #E0E0E0;
+      overflow: hidden;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .demo-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .demo-card-accent {
+      height: 6px;
+    }
+
+    .demo-card-body {
+      padding: 20px 24px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .demo-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .demo-type-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #F5F5F5;
+      color: #616161;
+    }
+
+    .demo-location {
+      font-size: 12px;
+      color: #9E9E9E;
+    }
+
+    .demo-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .demo-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #212121;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .demo-edition {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9E9E9E;
+      margin-bottom: 10px;
+    }
+
+    .demo-description {
+      font-size: 14px;
+      color: #616161;
+      line-height: 1.5;
+      flex: 1;
+      margin-bottom: 20px;
+    }
+
+    .demo-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .demo-dates {
+      font-size: 12px;
+      color: #9E9E9E;
+    }
+
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      transition: filter 0.15s;
+      white-space: nowrap;
+    }
+
+    .demo-btn:hover { filter: brightness(0.9); }
+
+    .demo-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: #BDBDBD;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Sidebar -->
-    <aside id="sidebar">
-      <!-- Event Header -->
-      <header id="event-header">
-        <img src="https://hospitaletturisme.l-h.cat/img/logo_LHTurisme.png" alt="L'Hospitalet Turisme" class="header-logo">
-        <p id="header-subtitle">Esdeveniments en viu</p>
-        <div id="event-divider"></div>
-        <div id="event-stats">
-          <div class="stat-row stat-live">
-            <span class="stat-icon"><i data-lucide="radio" class="lucide-sm"></i></span>
-            <span><strong id="explorers-count">8</strong> persones explorant ara</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-icon"><i data-lucide="eye" class="lucide-sm"></i></span>
-            <span><strong id="visits-count">1.247</strong> visites avui</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-icon"><i data-lucide="clock" class="lucide-sm"></i></span>
-            <span><strong id="open-count">0</strong> establiments oberts</span>
-          </div>
-        </div>
-        <a href="municipio.html" class="panel-link" id="link-municipio">Panel del Promotor</a>
-      </header>
 
-      <!-- Merchant List -->
-      <div id="merchant-list-container">
-        <div id="merchant-list">
-          <!-- Rendered by JS -->
-        </div>
-      </div>
-    </aside>
-
-    <!-- Map -->
-    <main id="map-container">
-      <div id="map"></div>
-      <!-- Loading overlay -->
-      <div id="map-loading">
-        <div class="loading-spinner"></div>
-        <p>Carregant mapa...</p>
-      </div>
-    </main>
-
-    <!-- Expanded Card (hover on marker) -->
-    <div id="merchant-card" class="merchant-card hidden">
-      <div class="card-photo" id="card-photo"></div>
-      <div class="card-content">
-        <div class="card-badge" id="card-badge"></div>
-        <h3 class="card-name" id="card-name"></h3>
-        <div class="card-divider"></div>
-        <p class="card-dish" id="card-dish"></p>
-        <p class="card-address" id="card-address"></p>
-        <p class="card-status" id="card-status"></p>
-        <div class="card-tags" id="card-tags"></div>
-        <div class="card-actions">
-          <button class="btn btn-secondary" id="card-btn-detail">Veure més</button>
-          <button class="btn btn-primary" id="card-btn-route">Ruta <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:2px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
-        </div>
-      </div>
+  <header>
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
     </div>
+    <span class="logo-text">Re<span>vent</span></span>
+    <span class="header-tag">Demos</span>
+  </header>
 
-    <!-- Detail Modal -->
-    <div id="modal-overlay" class="modal-overlay hidden">
-      <div id="modal-panel" class="modal-panel">
-        <div class="modal-header">
-          <button class="modal-back" id="modal-back">← Tornar</button>
-          <button class="modal-close" id="modal-close">✕</button>
-        </div>
-        <div class="modal-photo" id="modal-photo">
-          <div class="photo-placeholder"><i data-lucide="image" class="lucide-lg"></i></div>
-        </div>
-        <div class="modal-body">
-          <div class="modal-event-badge" id="modal-event-badge"></div>
-          <h2 class="modal-name" id="modal-name"></h2>
-          <div class="modal-divider"></div>
-          <div class="modal-dish-section">
-            <h3 class="modal-dish" id="modal-dish"></h3>
-            <p class="modal-dish-desc" id="modal-dish-desc"></p>
+  <main>
+    <div class="demos-grid" id="demos-grid">
+      <!-- Rendered by JS -->
+    </div>
+  </main>
+
+  <footer>Marco Labs · Revent</footer>
+
+  <script>
+    const demos = [
+      {
+        param:       'platillos',
+        icon:        '🍽️',
+        name:        'A la tardor, platillos',
+        edition:     '11a edició',
+        type:        'Ruta gastronòmica',
+        location:    "L'Hospitalet de Llobregat",
+        dates:       '6 – 23 nov 2025',
+        description: "28 establiments participants amb un platillo + beguda per 4,50€. Mostra el seguiment en temps real d'una ruta gastronòmica municipal.",
+        color:       '#FF6B00',
+      },
+    ];
+
+    const extras = [
+      {
+        icon:        '📊',
+        name:        'Presentació — Ajuntament de L\'H',
+        type:        'Presentació',
+        description: 'Presentació completa de Revent per a l\'Ajuntament de L\'Hospitalet de Llobregat.',
+        color:       '#1565C0',
+        href:        'presentacion.html',
+      },
+    ];
+
+    const grid = document.getElementById('demos-grid');
+
+    const demoCards = demos.map(d => `
+      <div class="demo-card" onclick="location.href='app.html?demo=${d.param}'">
+        <div class="demo-card-accent" style="background:${d.color}"></div>
+        <div class="demo-card-body">
+          <div class="demo-card-meta">
+            <span class="demo-type-badge">${d.type}</span>
+            <span class="demo-location">${d.location}</span>
           </div>
-          <div class="modal-divider"></div>
-          <div class="modal-info">
-            <p class="modal-address" id="modal-address"></p>
+          <span class="demo-icon">${d.icon}</span>
+          <div class="demo-name">${d.name}</div>
+          <div class="demo-edition">${d.edition}</div>
+          <p class="demo-description">${d.description}</p>
+          <div class="demo-card-footer">
+            <span class="demo-dates">${d.dates}</span>
+            <a class="demo-btn" href="app.html?demo=${d.param}" style="background:${d.color}" onclick="event.stopPropagation()">
+              Obrir demo
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
           </div>
-          <div class="modal-divider"></div>
-          <div class="modal-info">
-            <div class="modal-hours" id="modal-hours"></div>
-            <p class="modal-status" id="modal-status"></p>
-          </div>
-          <div class="modal-tags" id="modal-tags"></div>
-          <button class="btn btn-primary btn-large" id="modal-btn-route">Com arribar-hi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-left:4px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
-          <a class="btn btn-secondary btn-large modal-btn-stats" id="modal-btn-stats" style="margin-top:8px;display:block;text-align:center;text-decoration:none;">Panel del comerciant</a>
         </div>
       </div>
-    </div>
-  </div>
+    `);
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    const extraCards = extras.map(e => `
+      <div class="demo-card" onclick="location.href='${e.href}'">
+        <div class="demo-card-accent" style="background:${e.color}"></div>
+        <div class="demo-card-body">
+          <div class="demo-card-meta">
+            <span class="demo-type-badge">${e.type}</span>
+          </div>
+          <span class="demo-icon">${e.icon}</span>
+          <div class="demo-name">${e.name}</div>
+          <p class="demo-description">${e.description}</p>
+          <div class="demo-card-footer">
+            <span></span>
+            <a class="demo-btn" href="${e.href}" style="background:${e.color}" onclick="event.stopPropagation()">
+              Obrir
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    `);
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Leaflet MarkerCluster JS -->
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-  <!-- Turf.js for geospatial operations -->
-  <script src="https://unpkg.com/@turf/turf@7/turf.min.js"></script>
-  <!-- App JS -->
-  <script src="assets/js/signals.js"></script>
-  <script src="assets/js/map.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script>lucide.createIcons();</script>
+    grid.innerHTML = [...demoCards, ...extraCards].join('');
+  </script>
 </body>
 </html>

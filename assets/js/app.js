@@ -25,9 +25,15 @@ const App = (() => {
       MapModule.init();
       events.forEach(evt => {
         MapModule.addMerchants(evt.merchants, evt.color);
-        MapModule.drawInfluenceZone(evt.merchants, evt.color);
+        if (evt.influenceZoneUrl) {
+          MapModule.drawInfluenceZoneFromUrl(evt.influenceZoneUrl, evt.color);
+        } else {
+          MapModule.drawInfluenceZone(evt.merchants, evt.color);
+        }
       });
       MapModule.fitToMarkers();
+      // fitToMarkers triggers zoomend, but call explicitly in case zoom doesn't change
+      MapModule.updateLabelVisibility();
 
       renderGlobalStats(data);
       renderEventSections(events);
@@ -80,7 +86,6 @@ const App = (() => {
               <img src="assets/images/merchants/${m.id}.png" alt="${m.name}" class="merchant-thumb" onerror="this.style.display='none'">
               <div class="merchant-item-info">
                 <div class="merchant-name-row">
-                  <span class="merchant-number" style="background:${evt.color}">${m.id}</span>
                   <span class="merchant-name">${m.name}</span>
                   ${popularBadge}
                 </div>
@@ -118,6 +123,7 @@ const App = (() => {
         const toggle = header.querySelector('.event-section-toggle');
         body.classList.toggle('collapsed');
         toggle.textContent = body.classList.contains('collapsed') ? '▸' : '▾';
+        MapModule.updateLabelVisibility();
       });
     });
 
@@ -330,7 +336,4 @@ const App = (() => {
   };
 })();
 
-// Start the app
-document.addEventListener('DOMContentLoaded', () => {
-  App.init();
-});
+// App is booted by main.js

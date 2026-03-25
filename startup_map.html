@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Map</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; background: #f8f7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+@media (prefers-color-scheme: dark) { html, body { background: #1a1a18; } }
+.page { width: 100%; height: 100%; display: flex; flex-direction: column; padding: 16px; }
+#treemap { flex: 1; position: relative; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(0,0,0,0.1); min-height: 0; }
+@media (prefers-color-scheme: dark) { #treemap { border-color: rgba(255,255,255,0.1); } }
+.continent-bg { position: absolute; pointer-events: none; }
+.cell { position: absolute; cursor: default; overflow: hidden; transition: filter 0.15s; }
+.cell:hover { filter: brightness(0.93); }
+.cell-inner { position: absolute; inset: 3px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 6px; overflow: hidden; }
+.cell-name { font-size: 25px; font-weight: 500; text-align: center; line-height: 1.2; }
+.continent-label { position: absolute; font-size: 30px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; z-index: 10; padding: 4px 10px; border-radius: 6px; pointer-events: none; }
+.legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; flex-shrink: 0; }
+.legend-label { font-size: 13px; color: #888; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; margin-right: 2px; }
+.legend-section { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #888; }
+.legend-swatch { width: 22px; height: 13px; border-radius: 3px; }
+.legend-divider { width: 1px; height: 16px; background: rgba(0,0,0,0.12); margin: 0 6px; }
+@media (prefers-color-scheme: dark) { .legend-label, .legend-item { color: #666; } .legend-divider { background: rgba(255,255,255,0.12); } }
+.tooltip-box { position: fixed; background: #fff; border: 0.5px solid rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 13px; font-size: 14px; color: #111; pointer-events: none; opacity: 0; transition: opacity 0.12s; z-index: 100; white-space: nowrap; line-height: 1.6; }
+@media (prefers-color-scheme: dark) { .tooltip-box { background: #2a2a28; border-color: rgba(255,255,255,0.15); color: #e8e6e0; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="treemap"></div>
+  <div class="legend">
+    <span class="legend-label">Certidumbre</span>
+    <div class="legend-section">
+      <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75"></div>5 — Claro</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#5DCAA5"></div>4</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#9FE1CB"></div>3</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#E8C97A"></div>2</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#E8A87A"></div>1 — Incierto</div>
+    </div>
+    <div class="legend-divider"></div>
+    <div class="legend-section">
+      <div class="legend-item"><div class="legend-swatch" style="background:#EEEDFE;border:1.5px solid #7F77DD;"></div>Negocio</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#FAECE7;border:1.5px solid #D85A30;"></div>UX</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#FAEEDA;border:1.5px solid #BA7517;"></div>Producto</div>
+    </div>
+  </div>
+</div>
+<div class="tooltip-box" id="tip"></div>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+
+const continents = [
+  {
+    id: 'negocio', label: 'Negocio', weight: 25,
+    bg:         '#CECBF6',
+    border:     '#7F77DD',
+    labelColor: '#26215C',
+    areas: [
+      { name: 'Estrategia', score: 4 },
+      { name: 'Modelo', score: 3 },
+      { name: 'Mercado', score: 4 },
+      { name: 'Financiación', score: 2 },
+      { name: 'Legal', score: 4 },
+      { name: 'Objetivos', score: 2 },
+    ]
+  },
+  {
+    id: 'ux', label: 'UX', weight: 50,
+    bg:         '#F5C4B3',
+    border:     '#D85A30',
+    labelColor: '#4A1B0C',
+    areas: [
+      { name: 'Valor', score: 2 },
+      { name: 'Pricing', score: 2 },
+      { name: 'Diseño', score: 3 },
+      { name: 'Comunicación', score: 4 },
+      { name: 'Onboarding', score: 4 },
+      { name: 'Soporte', score: 5 },
+      { name: 'Contratos', score: 3 },
+      { name: 'Privacidad', score: 5 },
+    ]
+  },
+  {
+    id: 'producto', label: 'Producto', weight: 25,
+    bg:         '#FAC775',
+    border:     '#BA7517',
+    labelColor: '#412402',
+    areas: [
+      { name: 'Innovación', score: 5 },
+      { name: 'Arquitectura', score: 5 },
+      { name: 'Features', score: 4 },
+      { name: 'Infraestructura', score: 5 },
+      { name: 'Seguridad', score: 4 },
+      
+    ]
+  }
+];
+
+const scoreColor = s => isDark
+  ? { 5:'#085041', 4:'#0F6E56', 3:'#1D9E75', 2:'#7A5C0A', 1:'#7A3A1A' }[s]
+  : { 5:'#1D9E75', 4:'#5DCAA5', 3:'#9FE1CB', 2:'#E8C97A', 1:'#E8A87A' }[s];
+
+const scoreTextColor = s => isDark
+  ? (s <= 2 ? '#FAC775' : '#9FE1CB')
+  : (s <= 2 ? '#412402' : '#085041');
+
+const scoreLabel = s => ['','Incierto','Poco definido','Parcial','Definido','Claro'][s];
+
+function squarify(items, x, y, w, h) {
+  const results = [];
+  function layout(items, x, y, w, h) {
+    if (!items.length) return;
+    if (items.length === 1) { results.push({ ...items[0], x, y, w, h }); return; }
+    const total = items.reduce((s, i) => s + i.w, 0);
+    const half = total / 2;
+    let acc = 0, split = 0;
+    for (let i = 0; i < items.length; i++) {
+      if (acc + items[i].w >= half) {
+        split = Math.abs(acc + items[i].w - half) < Math.abs(acc - half) ? i + 1 : i;
+        if (split === 0) split = 1;
+        break;
+      }
+      acc += items[i].w;
+      split = i + 1;
+    }
+    const a = items.slice(0, split), b = items.slice(split);
+    const ratio = a.reduce((s, i) => s + i.w, 0) / total;
+    if (w >= h) { layout(a, x, y, w*ratio, h); layout(b, x+w*ratio, y, w*(1-ratio), h); }
+    else        { layout(a, x, y, w, h*ratio); layout(b, x, y+h*ratio, w, h*(1-ratio)); }
+  }
+  layout(items, x, y, w, h);
+  return results;
+}
+
+function render() {
+  const container = document.getElementById('treemap');
+  const W = container.offsetWidth, H = container.offsetHeight;
+  if (!W || !H) { setTimeout(render, 50); return; }
+  container.innerHTML = '';
+
+  const cRects = squarify(continents.map(c => ({ ...c, w: c.weight })), 0, 0, W, H);
+
+  cRects.forEach((cr, ci) => {
+    const c = continents[ci];
+    const gap = 4, labelH = 56;
+
+    const bgEl = document.createElement('div');
+    bgEl.style.cssText = `position:absolute;left:${cr.x}px;top:${cr.y}px;width:${cr.w}px;height:${cr.h}px;background:${c.bg};border:2.5px solid ${c.border};border-radius:3px;pointer-events:none;`;
+    container.appendChild(bgEl);
+
+    const lblEl = document.createElement('div');
+    lblEl.className = 'continent-label';
+    lblEl.textContent = c.label;
+    lblEl.style.cssText = `left:${cr.x+8}px;top:${cr.y+4}px;color:${c.labelColor};`;
+    container.appendChild(lblEl);
+
+    const aRects = squarify(
+      c.areas.map(a => ({ ...a, w: 1 })),
+      cr.x+gap, cr.y+gap+labelH, cr.w-gap*2, cr.h-gap*2-labelH
+    );
+
+    aRects.forEach((ar, ai) => {
+      const area = c.areas[ai];
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.cssText = `left:${ar.x}px;top:${ar.y}px;width:${ar.w}px;height:${ar.h}px;`;
+      const showName = ar.w > 80 && ar.h > 44;
+      cell.innerHTML = `<div class="cell-inner" style="background:${scoreColor(area.score)};">${showName ? `<div class="cell-name" style="color:${scoreTextColor(area.score)};">${area.name}</div>` : ''}</div>`;
+      cell.addEventListener('mouseenter', () => {
+        const t = document.getElementById('tip');
+        t.innerHTML = `<strong>${area.name}</strong><br><span style="opacity:0.65">${scoreLabel(area.score)} · ${area.score}/5</span>`;
+        t.style.opacity = '1';
+      });
+      cell.addEventListener('mousemove', e => {
+        const t = document.getElementById('tip');
+        let tx = e.clientX+12, ty = e.clientY-55;
+        if (tx+180 > window.innerWidth) tx = e.clientX-190;
+        if (ty < 0) ty = 4;
+        t.style.left = tx+'px'; t.style.top = ty+'px';
+      });
+      cell.addEventListener('mouseleave', () => { document.getElementById('tip').style.opacity = '0'; });
+      container.appendChild(cell);
+    });
+  });
+}
+
+render();
+let rt;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 60); });
+</script>
+</body>
+</html>

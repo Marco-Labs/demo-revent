@@ -85,10 +85,41 @@ html, body {
   flex-shrink: 0;
 }
 
+.header-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .header-logo {
   height: 40px;
   width: auto;
   object-fit: contain;
+}
+
+.back-to-index {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.back-to-index:hover {
+  background: var(--gray-light);
+  color: var(--text-medium);
+}
+
+.back-to-index svg {
+  width: 13px;
+  height: 13px;
 }
 
 #header-subtitle {
@@ -432,22 +463,52 @@ html, body {
   font-size: 14px;
 }
 
+/* ===== Parcel Polygons (cadastral) ===== */
+/* Ensure pointer cursor on interactive SVG paths rendered by Leaflet */
+.leaflet-interactive {
+  cursor: pointer;
+}
+
 /* ===== Custom Markers ===== */
+/* Leaflet wrapper: must not clip labels that overflow */
+.custom-marker-wrapper {
+  overflow: visible !important;
+}
+
 .custom-marker {
-  width: 36px;
-  height: 36px;
+  width: 18px;
+  height: 18px;
+  margin: 9px; /* centers the 18px dot inside Leaflet's 36×36 wrapper */
   border-radius: 50%;
-  border: 2.5px solid var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--white);
+  border: 2px solid var(--white);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   transition: transform 0.15s ease, border-width 0.15s ease;
   cursor: pointer;
   position: relative;
+}
+
+/* Merchant name label — hidden by default, shown on .show-label */
+.marker-label {
+  display: none;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--event-color, var(--primary));
+  background: var(--white);
+  padding: 2px 7px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+.custom-marker.show-label .marker-label {
+  display: block;
 }
 
 .custom-marker.marker-open {
@@ -471,8 +532,8 @@ html, body {
 
 .custom-marker.marker-active {
   background-color: var(--event-color, var(--primary-dark));
-  border-width: 4px;
-  transform: scale(1.15);
+  border-width: 3px;
+  transform: scale(1.4);
   z-index: 900 !important;
   filter: brightness(0.85);
 }
@@ -541,8 +602,8 @@ html, body {
 }
 
 @keyframes ripple-anim {
-  0% { width: 36px; height: 36px; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-  100% { width: 36px; height: 36px; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+  0% { width: 18px; height: 18px; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  100% { width: 18px; height: 18px; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
 }
 
 /* Cluster override */
@@ -983,6 +1044,117 @@ html, body {
   border-radius: 12px;
   background: var(--gray-light);
   color: var(--text-medium);
+}
+
+/* ===== Demo-specific color overrides ===== */
+[data-demo="hostafrancs"] {
+  --primary:        #C0392B;
+  --primary-bright: #E74C3C;
+  --primary-dark:   #922B21;
+  --primary-medium: #CD6155;
+}
+
+/* ===== Festa Major – Act list items ===== */
+
+.act-item-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.act-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-medium);
+  min-width: 38px;
+  padding-top: 2px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.act-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.act-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.act-type-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Status classes for festa acts */
+.merchant-status.happening-now { color: var(--green); font-weight: 600; }
+.merchant-status.ending-soon   { color: var(--orange-badge); }
+.merchant-status.starting-soon { color: var(--orange-badge); }
+.merchant-status.today-later   { color: var(--text-medium); }
+.merchant-status.past          { color: var(--text-light); }
+.merchant-status.future        { color: var(--text-medium); }
+
+.modal-status.happening-now { color: var(--green); }
+.modal-status.ending-soon   { color: var(--orange-badge); }
+.modal-status.starting-soon { color: var(--orange-badge); }
+.modal-status.today-later   { color: var(--text-medium); }
+.modal-status.past          { color: var(--text-light); }
+.modal-status.future        { color: var(--text-medium); }
+
+/* "X ara" badge inside section header */
+.happening-now-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--green);
+}
+
+/* Festa Major – Modal photo replacement */
+.festa-act-photo {
+  width: 100%;
+  height: 220px;
+  background: #C0392B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.festa-act-icon {
+  font-size: 72px;
+  opacity: 0.85;
+}
+
+/* Act time in modal */
+.act-modal-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-medium);
+  padding: 4px 0;
+}
+
+.act-free-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.12);
+  color: var(--green);
+  margin-left: 6px;
+}
+
+/* Festa header logo replacement */
+.festa-header-logo {
+  margin-bottom: 4px;
 }
 
 /* ===== Error state ===== */

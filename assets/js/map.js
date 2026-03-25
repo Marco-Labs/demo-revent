@@ -3,6 +3,7 @@
 const MapModule = (() => {
   let map = null;
   let markers = {};        // merchantId -> { marker, element }
+  let parcelLayers = {};   // merchantId -> L.GeoJSON layer
   let clusterGroup = null;
   let activeMarkerId = null;
   let hoverTimeout = null;
@@ -32,14 +33,14 @@ const MapModule = (() => {
     // Click on empty map area -> reset
     map.on('click', () => {
       resetAllStates();
-      App.closeModal();
+      window.App.closeModal();
     });
 
     clusterGroup = L.markerClusterGroup({
       maxClusterRadius: 30,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
-      disableClusteringAtZoom: 16,
+      disableClusteringAtZoom: 17,
       iconCreateFunction: (cluster) => {
         const count = cluster.getChildCount();
         return L.divIcon({
@@ -52,6 +53,9 @@ const MapModule = (() => {
 
     map.addLayer(clusterGroup);
 
+    // Update label visibility on zoom changes
+    map.on('zoomend', updateLabelVisibility);
+
     // Cluster hover -> show tooltip with merchant list
     clusterGroup.on('clustermouseover', (e) => {
       const cluster = e.layer;
@@ -63,7 +67,7 @@ const MapModule = (() => {
         const latlng = cm.getLatLng();
         const merchant = findMerchantByLatLng(latlng);
         if (!merchant) return null;
-        const status = Signals.getOpenStatus(merchant, now);
+        const status = window.Signals.getOpenStatus(merchant, now);
         const dotClass = (status.status === 'open' || status.status === 'closing-soon') ? 'dot-open' : 'dot-closed';
         return `<div class="cluster-tooltip-item"><span class="status-dot ${dotClass}"></span>${merchant.name}</div>`;
       }).filter(Boolean);
@@ -91,7 +95,7 @@ const MapModule = (() => {
    * Find merchant by marker latlng.
    */
   function findMerchantByLatLng(latlng) {
-    return App.merchants.find(m =>
+    return window.App.merchants.find(m =>
       m.coordinates.lat === latlng.lat && m.coordinates.lng === latlng.lng
     );
   }
@@ -100,7 +104,7 @@ const MapModule = (() => {
    * Create a custom div marker for a merchant.
    */
   function createMarker(merchant, eventColor) {
-    const { classes, status, popularity } = Signals.getMarkerClasses(merchant);
+    const { classes, status, popularity } = window.Signals.getMarkerClasses(merchant);
 
     // Skip merchants with no coordinates
     if (!merchant.coordinates || (merchant.coordinates.lat === 0 && merchant.coordinates.lng === 0)) {
@@ -108,7 +112,7 @@ const MapModule = (() => {
     }
 
     const colorStyle = eventColor ? `style="--event-color:${eventColor}"` : '';
-    const markerHtml = `<div class="custom-marker ${classes.join(' ')}" data-merchant-id="${merchant.id}" ${colorStyle}>${merchant.id}</div>`;
+    const markerHtml = `<div class="custom-marker ${classes.join(' ')}" data-merchant-id="${merchant.id}" ${colorStyle}><span class="marker-label">${merchant.name}</span></div>`;
 
     const icon = L.divIcon({
       html: markerHtml,
@@ -120,7 +124,7 @@ const MapModule = (() => {
     const marker = L.marker([merchant.coordinates.lat, merchant.coordinates.lng], { icon });
 
     // Store reference
-    markers[merchant.id] = { marker, status, popularity };
+    markers[merchant.id] = { marker, status, popularity, visits: merchant.stats.visits };
 
     // Marker hover -> show card
     marker.on('mouseover', () => {
@@ -145,9 +149,9 @@ const MapModule = (() => {
     marker.on('click', (e) => {
       L.DomEvent.stopPropagation(e);
       setActive(merchant.id);
-      App.setActiveItem(merchant.id);
+      window.App.setActiveItem(merchant.id);
       panTo(merchant.id, true);
-      App.openModal(merchant);
+      window.App.openModal(merchant);
     });
 
     clusterGroup.addLayer(marker);
@@ -164,10 +168,10 @@ const MapModule = (() => {
   /**
    * Fit map to the bounds of all current markers with padding.
    */
-  function fitToMarkers() {
+  function fitToMarkers(options = {}) {
     const bounds = clusterGroup.getBounds();
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [40, 40] });
+      map.fitBounds(bounds, { padding: [40, 40], ...options });
     }
   }
 
@@ -210,6 +214,11 @@ const MapModule = (() => {
         updateMarkerElement(numId, 'remove', 'marker-active');
       }
     });
+
+    Object.keys(parcelLayers).forEach(id => {
+      const numId = Number(id);
+      updateParcelStyle(numId, numId === merchantId ? 'active' : 'dimmed');
+    });
   }
 
   /**
@@ -222,6 +231,9 @@ const MapModule = (() => {
       updateMarkerElement(Number(id), 'remove', 'marker-out-of-focus');
       updateMarkerElement(Number(id), 'remove', 'marker-hover');
     });
+    Object.keys(parcelLayers).forEach(id => {
+      updateParcelStyle(Number(id), 'default');
+    });
   }
 
   /**
@@ -230,7 +242,7 @@ const MapModule = (() => {
   function resetAllStates() {
     resetMarkerStates();
     hideCard();
-    App.resetListStates();
+    window.App.resetListStates();
   }
 
   /**
@@ -254,8 +266,8 @@ const MapModule = (() => {
   function showCard(merchant, marker) {
     const card = document.getElementById('merchant-card');
     const now = new Date();
-    const status = Signals.getOpenStatus(merchant, now);
-    const popularity = Signals.getPopularity(merchant.stats.visits);
+    const status = window.Signals.getOpenStatus(merchant, now);
+    const popularity = window.Signals.getPopularity(merchant.stats.visits);
 
     // Photo
     const photoEl = document.getElementById('card-photo');
@@ -274,13 +286,13 @@ const MapModule = (() => {
     document.getElementById('card-address').innerHTML = `<i data-lucide="map-pin" class="lucide-sm"></i> ${merchant.address}`;
     lucide.createIcons({ attrs: { class: 'lucide-sm' }, nameAttr: 'data-lucide' });
     const statusEl = document.getElementById('card-status');
-    statusEl.innerHTML = Signals.getStatusBadge(status);
+    statusEl.innerHTML = window.Signals.getStatusBadge(status);
     statusEl.className = `card-status ${status.status}`;
 
     // Tags
     const tagsEl = document.getElementById('card-tags');
     tagsEl.innerHTML = merchant.tags.map(t =>
-      `<span class="card-tag">${Signals.getTagLabel(t)}</span>`
+      `<span class="card-tag">${window.Signals.getTagLabel(t)}</span>`
     ).join('');
 
     // Buttons
@@ -292,7 +304,7 @@ const MapModule = (() => {
       e.stopPropagation();
       hideCard();
       panTo(merchant.id, true);
-      App.openModal(merchant);
+      window.App.openModal(merchant);
     };
 
     // Position card above marker
@@ -408,7 +420,7 @@ const MapModule = (() => {
     merchantList.forEach(m => {
       const el = getMarkerDomElement(m.id);
       if (!el) return;
-      const { classes } = Signals.getMarkerClasses(m, now);
+      const { classes } = window.Signals.getMarkerClasses(m, now);
 
       // Remove old status classes
       el.classList.remove('marker-open', 'marker-closed', 'marker-opening-soon', 'marker-closing-soon',
@@ -452,9 +464,158 @@ const MapModule = (() => {
     if (merchantId) updateMarkerElement(merchantId, 'remove', 'marker-hover');
   }
 
+  // ---- Label Visibility (zoom-based, progressive like Google Maps) ----
+
+  /**
+   * Show/hide merchant name labels based on zoom level and popularity.
+   * Higher zoom → more labels appear, prioritized by visit count.
+   * Merchants in expanded event sections always show their label.
+   */
+  function updateLabelVisibility() {
+    // Show labels only for merchants in expanded event sections
+    const showIds = new Set();
+    document.querySelectorAll('.event-section').forEach(section => {
+      const body = section.querySelector('.event-section-body');
+      if (body && !body.classList.contains('collapsed')) {
+        body.querySelectorAll('.merchant-item[data-id]').forEach(item => {
+          showIds.add(Number(item.dataset.id));
+        });
+      }
+    });
+
+    Object.keys(markers).forEach(id => {
+      const numId = Number(id);
+      const el = getMarkerDomElement(numId);
+      if (!el) return;
+      el.classList.toggle('show-label', showIds.has(numId));
+    });
+  }
+
+  // ---- Parcel Polygons (Cadastral parcels per merchant) ----
+
+  /**
+   * Update the visual style of a parcel polygon layer.
+   * States: 'default', 'hover', 'active', 'dimmed'
+   */
+  function updateParcelStyle(merchantId, state) {
+    const entry = parcelLayers[merchantId];
+    if (!entry) return;
+    const baseColor = entry.color;
+    const styles = {
+      default: { fillOpacity: 0.12, opacity: 0.6,  weight: 1.5 },
+      hover:   { fillOpacity: 0.25, opacity: 0.9,  weight: 2.5 },
+      active:  { fillOpacity: 0.30, opacity: 1.0,  weight: 2.5 },
+      dimmed:  { fillOpacity: 0.04, opacity: 0.25, weight: 1   },
+    };
+    entry.layer.setStyle({ ...styles[state] || styles.default, color: baseColor, fillColor: baseColor });
+  }
+
+  /**
+   * Load parcel polygons from a GeoJSON URL and link each feature
+   * to the nearest merchant by proximity of referencePoint coordinates.
+   * Polygons are interactive: hover shows card, click opens modal.
+   */
+  async function drawParcelPolygons(url, merchantList, eventColor) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const geojson = await resp.json();
+
+      const validMerchants = merchantList.filter(
+        m => m.coordinates && !(m.coordinates.lat === 0 && m.coordinates.lng === 0)
+      );
+
+      geojson.features.forEach(feature => {
+        const [refLng, refLat] = feature.properties.referencePoint;
+
+        // Match parcel to nearest merchant by Euclidean distance
+        let nearest = null;
+        let minDist = Infinity;
+        validMerchants.forEach(m => {
+          const dist = Math.hypot(m.coordinates.lat - refLat, m.coordinates.lng - refLng);
+          if (dist < minDist) { minDist = dist; nearest = m; }
+        });
+
+        if (!nearest) return;
+
+        const layer = L.geoJSON(feature, {
+          style: {
+            color: eventColor,
+            fillColor: eventColor,
+            weight: 1.5,
+            opacity: 0.6,
+            fillOpacity: 0.12,
+            interactive: true,
+          }
+        });
+
+        parcelLayers[nearest.id] = { layer, color: eventColor };
+
+        layer.on('mouseover', () => {
+          if (activeMarkerId !== null) return;
+          clearTimeout(cardHideTimeout);
+          hoverTimeout = setTimeout(() => {
+            const entry = markers[nearest.id];
+            if (entry) showCard(nearest, entry.marker);
+            highlightListItem(nearest.id);
+            updateMarkerElement(nearest.id, 'add', 'marker-hover');
+            updateParcelStyle(nearest.id, 'hover');
+          }, 150);
+        });
+
+        layer.on('mouseout', () => {
+          clearTimeout(hoverTimeout);
+          cardHideTimeout = setTimeout(() => hideCard(), 200);
+          updateMarkerElement(nearest.id, 'remove', 'marker-hover');
+          updateParcelStyle(nearest.id, 'default');
+          unhighlightListItem();
+        });
+
+        layer.on('click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          setActive(nearest.id);
+          window.App.setActiveItem(nearest.id);
+          panTo(nearest.id, true);
+          window.App.openModal(nearest);
+        });
+
+        layer.addTo(map);
+      });
+    } catch (e) {
+      console.warn('drawParcelPolygons failed:', e);
+    }
+  }
+
   // ---- Influence Zone (Buffer + Union via Turf.js) ----
 
   let zoneLayers = [];
+
+  /**
+   * Draw influence zone from a precomputed GeoJSON URL.
+   */
+  async function drawInfluenceZoneFromUrl(url, color) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const geojson = await resp.json();
+
+      const layer = L.geoJSON(geojson, {
+        style: {
+          color: color,
+          weight: 2,
+          opacity: 0.35,
+          fillColor: color,
+          fillOpacity: 0.08,
+          interactive: false
+        }
+      });
+
+      layer.addTo(map);
+      zoneLayers.push(layer);
+    } catch (e) {
+      console.warn('drawInfluenceZoneFromUrl failed:', e);
+    }
+  }
 
   /**
    * Draw influence zone as merged buffers around each merchant.
@@ -516,6 +677,9 @@ const MapModule = (() => {
     refreshMarkerStates,
     triggerRipple,
     drawInfluenceZone,
+    drawInfluenceZoneFromUrl,
+    drawParcelPolygons,
+    updateLabelVisibility,
     get activeMarkerId() { return activeMarkerId; },
     get markers() { return markers; }
   };

@@ -14,6 +14,8 @@
       "sponsor": "Mònica Escudero",
       "icon": "🍽️",
       "color": "#FF6B00",
+      "influenceZoneUrl": "assets/data/union_5min.geojson",
+      "parcelGeoJsonUrl": "assets/data/platillos_parcels.geojson",
       "merchants": [
     {
       "id": 1,
@@ -863,93 +865,6 @@
         "routes": 12
       }
     }
-      ]
-    },
-    {
-      "id": "mercat-nadal-2025",
-      "name": "Mercat de Nadal",
-      "edition": "3a edició",
-      "dates": {
-        "start": "2025-12-01",
-        "end": "2025-12-23"
-      },
-      "location": "Plaça de l'Ajuntament, L'Hospitalet",
-      "price": "Entrada lliure",
-      "description": "Mercat nadalenc amb artesania, gastronomia i productes locals.",
-      "icon": "🎄",
-      "color": "#2196F3",
-      "merchants": [
-        {
-          "id": 101,
-          "name": "Artesania La Pedra",
-          "address": "Plaça de l'Ajuntament, parada 1",
-          "coordinates": { "lat": 41.3601, "lng": 2.0998 },
-          "dish": { "name": "Joieria artesanal en pedra natural", "description": "Peces úniques fetes a mà amb pedres semiprecioses.", "price": "" },
-          "hours": { "monday": "closed", "tuesday": "10:00-14:00,17:00-21:00", "wednesday": "10:00-14:00,17:00-21:00", "thursday": "10:00-14:00,17:00-21:00", "friday": "10:00-14:00,17:00-21:00", "saturday": "10:00-21:00", "sunday": "10:00-15:00" },
-          "tags": [],
-          "photo": "",
-          "stats": { "visits": 45, "routes": 12 }
-        },
-        {
-          "id": 102,
-          "name": "Torrons Cal Vell",
-          "address": "Plaça de l'Ajuntament, parada 5",
-          "coordinates": { "lat": 41.3604, "lng": 2.1002 },
-          "dish": { "name": "Torrons artesans i neules", "description": "Torrons tradicionals fets amb ametlla marcona i mel de romaní.", "price": "8€ – 15€" },
-          "hours": { "monday": "closed", "tuesday": "10:00-14:00,17:00-21:00", "wednesday": "10:00-14:00,17:00-21:00", "thursday": "10:00-14:00,17:00-21:00", "friday": "10:00-14:00,17:00-21:00", "saturday": "10:00-21:00", "sunday": "10:00-15:00" },
-          "tags": ["sense-gluten"],
-          "photo": "",
-          "stats": { "visits": 62, "routes": 8 }
-        },
-        {
-          "id": 103,
-          "name": "Cava i Formatges del Penedès",
-          "address": "Plaça de l'Ajuntament, parada 8",
-          "coordinates": { "lat": 41.3597, "lng": 2.1000 },
-          "dish": { "name": "Tast de caves i formatges", "description": "Selecció de caves brut nature i formatges artesans del Penedès.", "price": "6€ el tast" },
-          "hours": { "monday": "closed", "tuesday": "11:00-14:00,18:00-21:00", "wednesday": "11:00-14:00,18:00-21:00", "thursday": "11:00-14:00,18:00-21:00", "friday": "11:00-14:00,18:00-21:00", "saturday": "11:00-21:00", "sunday": "11:00-15:00" },
-          "tags": [],
-          "photo": "",
-          "stats": { "visits": 38, "routes": 5 }
-        }
-      ]
-    },
-    {
-      "id": "fira-art-2025",
-      "name": "Fira d'Art al Carrer",
-      "edition": "1a edició",
-      "dates": {
-        "start": "2025-11-15",
-        "end": "2025-11-17"
-      },
-      "location": "Rambla Just Oliveras, L'Hospitalet",
-      "price": "Gratuït",
-      "description": "Exposició d'art, tallers i actuacions al carrer.",
-      "icon": "🎨",
-      "color": "#4CAF50",
-      "merchants": [
-        {
-          "id": 201,
-          "name": "Galeria Nova",
-          "address": "Rambla Just Oliveras, 42",
-          "coordinates": { "lat": 41.3565, "lng": 2.1090 },
-          "dish": { "name": "Pintura contemporània", "description": "Obres d'artistes locals emergents.", "price": "20€ – 500€" },
-          "hours": { "monday": "closed", "tuesday": "closed", "wednesday": "closed", "thursday": "closed", "friday": "17:00-21:00", "saturday": "10:00-21:00", "sunday": "10:00-15:00" },
-          "tags": [],
-          "photo": "",
-          "stats": { "visits": 28, "routes": 3 }
-        },
-        {
-          "id": 202,
-          "name": "Taller de Ceràmica Fang",
-          "address": "Rambla Just Oliveras, 56",
-          "coordinates": { "lat": 41.3570, "lng": 2.1098 },
-          "dish": { "name": "Ceràmica artística i funcional", "description": "Peces de ceràmica fetes al torn. Tallers oberts al públic.", "price": "Taller: 12€" },
-          "hours": { "monday": "closed", "tuesday": "closed", "wednesday": "closed", "thursday": "closed", "friday": "17:00-21:00", "saturday": "10:00-21:00", "sunday": "10:00-15:00" },
-          "tags": [],
-          "photo": "",
-          "stats": { "visits": 19, "routes": 2 }
-        }
       ]
     }
   ],

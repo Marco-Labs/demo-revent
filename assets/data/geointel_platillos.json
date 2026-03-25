@@ -1,0 +1,264 @@
+{
+  "totalPopulation": 45200,
+  "area": 3140000,
+  "density": 14395,
+  "method": "building_weighted",
+  "totalFootfall": 8750,
+  "demographics": {
+    "totalPopulation": 45200,
+    "ageDistribution": {
+      "age0to15": 13.2,
+      "age16to24": 11.5,
+      "age25to34": 16.8,
+      "age35to44": 17.2,
+      "age45to54": 15.8,
+      "age55to64": 12.3,
+      "age65plus": 13.2
+    },
+    "medianAge": 41.8,
+    "meanAge": 40.2,
+    "malePercent": 48.8,
+    "femalePercent": 51.2,
+    "spanishPercent": 72.5,
+    "foreignPercent": 27.5
+  },
+  "income": {
+    "meanIncomePerPerson": 14200,
+    "medianIncomePerPerson": 12800,
+    "meanIncomePerHousehold": 34100,
+    "medianIncomePerHousehold": 30500,
+    "salaryPercent": 68.5,
+    "pensionPercent": 18.2,
+    "unemploymentPercent": 5.8,
+    "otherBenefitsPercent": 3.8,
+    "otherIncomePercent": 3.7,
+    "giniIndex": 0.34,
+    "p80p20": 3.8,
+    "year": 2022
+  },
+  "mobility": {
+    "dateFrom": "2025-11-06T00:00:00Z",
+    "dateTo": "2025-11-23T23:59:59Z",
+    "daysAnalyzed": 18,
+    "inbound": {
+      "avgDailyTrips": 18500,
+      "byPurpose": {
+        "home": 0.12,
+        "workStudy": 0.32,
+        "frequent": 0.35,
+        "nonFrequent": 0.21
+      },
+      "byAge": {
+        "0-24": 0.19,
+        "25-44": 0.38,
+        "45-64": 0.29,
+        ">65": 0.14
+      },
+      "byDistance": {
+        "0.5-2": 0.22,
+        "2-10": 0.41,
+        "10-50": 0.28,
+        ">50": 0.09
+      }
+    },
+    "floatingPopulation": [
+      { "hour": 0, "population": 38200 },
+      { "hour": 1, "population": 37100 },
+      { "hour": 2, "population": 36500 },
+      { "hour": 3, "population": 36200 },
+      { "hour": 4, "population": 36400 },
+      { "hour": 5, "population": 37800 },
+      { "hour": 6, "population": 41200 },
+      { "hour": 7, "population": 48500 },
+      { "hour": 8, "population": 55800 },
+      { "hour": 9, "population": 61200 },
+      { "hour": 10, "population": 64500 },
+      { "hour": 11, "population": 66800 },
+      { "hour": 12, "population": 68200 },
+      { "hour": 13, "population": 67500 },
+      { "hour": 14, "population": 63200 },
+      { "hour": 15, "population": 59800 },
+      { "hour": 16, "population": 58200 },
+      { "hour": 17, "population": 60500 },
+      { "hour": 18, "population": 63800 },
+      { "hour": 19, "population": 61200 },
+      { "hour": 20, "population": 55400 },
+      { "hour": 21, "population": 48200 },
+      { "hour": 22, "population": 43500 },
+      { "hour": 23, "population": 40100 }
+    ],
+    "overnightStays": {
+      "avgNightlyStays": 42100,
+      "residentStays": 38800,
+      "nonResidentStays": 3300,
+      "tourismRatio": 0.078
+    },
+    "topOrigins": [
+      { "zoneId": "z_barcelona", "zoneName": "Barcelona centre", "avgDailyTrips": 4200, "percentage": 22.7 },
+      { "zoneId": "z_cornella", "zoneName": "Cornella de Llobregat", "avgDailyTrips": 2100, "percentage": 11.4 },
+      { "zoneId": "z_esplugues", "zoneName": "Esplugues de Llobregat", "avgDailyTrips": 1850, "percentage": 10.0 },
+      { "zoneId": "z_elprat", "zoneName": "El Prat de Llobregat", "avgDailyTrips": 1400, "percentage": 7.6 },
+      { "zoneId": "z_santjust", "zoneName": "Sant Just Desvern", "avgDailyTrips": 980, "percentage": 5.3 }
+    ]
+  },
+  "pois": {
+    "totalCount": 890,
+    "hospitalityDensity": 42.5,
+    "retailDensity": 28.3,
+    "transitStops": 35,
+    "areaKm2": 3.14,
+    "categories": [
+      { "category": "hospitality", "subcategory": "restaurant", "count": 185 },
+      { "category": "hospitality", "subcategory": "cafe", "count": 92 },
+      { "category": "hospitality", "subcategory": "bar", "count": 78 },
+      { "category": "retail", "subcategory": "supermarket", "count": 24 },
+      { "category": "retail", "subcategory": "clothes", "count": 45 },
+      { "category": "retail", "subcategory": "bakery", "count": 38 },
+      { "category": "retail", "subcategory": "other", "count": 156 },
+      { "category": "health", "subcategory": "pharmacy", "count": 18 },
+      { "category": "health", "subcategory": "clinic", "count": 12 },
+      { "category": "education", "subcategory": "school", "count": 15 },
+      { "category": "transport", "subcategory": "bus_stop", "count": 28 },
+      { "category": "transport", "subcategory": "metro", "count": 7 },
+      { "category": "leisure", "subcategory": "park", "count": 8 },
+      { "category": "leisure", "subcategory": "sports", "count": 6 },
+      { "category": "services", "subcategory": "bank", "count": 14 },
+      { "category": "services", "subcategory": "other", "count": 164 }
+    ]
+  },
+  "weather": {
+    "latitude": 41.362,
+    "longitude": 2.110,
+    "mode": "forecast",
+    "summary": {
+      "rainRisk": 0.15,
+      "comfortScore": 7.2,
+      "windRisk": 0.10,
+      "uvRisk": 0.35,
+      "daylightHours": 10.1,
+      "recommendation": "good"
+    },
+    "forecast": {
+      "daily": [
+        { "date": "2025-11-06", "tempMax": 18.5, "tempMin": 11.2, "precipitationProbMax": 10, "windSpeedMax": 15, "weatherCode": 1 },
+        { "date": "2025-11-07", "tempMax": 17.8, "tempMin": 10.8, "precipitationProbMax": 15, "windSpeedMax": 12, "weatherCode": 2 },
+        { "date": "2025-11-08", "tempMax": 19.2, "tempMin": 12.1, "precipitationProbMax": 5, "windSpeedMax": 8, "weatherCode": 0 },
+        { "date": "2025-11-09", "tempMax": 18.0, "tempMin": 11.5, "precipitationProbMax": 20, "windSpeedMax": 18, "weatherCode": 3 },
+        { "date": "2025-11-10", "tempMax": 16.5, "tempMin": 10.2, "precipitationProbMax": 45, "windSpeedMax": 22, "weatherCode": 61 }
+      ]
+    }
+  },
+  "airQuality": {
+    "latitude": 41.362,
+    "longitude": 2.110,
+    "summary": {
+      "peakAqi": 52,
+      "avgAqi": 38,
+      "dominantPollutant": "pm25",
+      "pm25Risk": 0.28,
+      "ozoneRisk": 0.15,
+      "pollenRisk": 0.12,
+      "rating": "good"
+    }
+  },
+  "alerts": {
+    "alerts": [],
+    "maxLevel": "",
+    "totalCount": 0
+  },
+  "score": {
+    "score": 7.8,
+    "profile": "event",
+    "rating": "good",
+    "indicators": [
+      { "key": "population.total", "rawValue": 45200, "normalized": 0.82, "weight": 0.18, "weighted": 1.48 },
+      { "key": "population.density", "rawValue": 14395, "normalized": 0.75, "weight": 0.12, "weighted": 0.90 },
+      { "key": "demographics.diversity", "rawValue": 27.5, "normalized": 0.68, "weight": 0.08, "weighted": 0.54 },
+      { "key": "income.meanIncome", "rawValue": 14200, "normalized": 0.52, "weight": 0.10, "weighted": 0.52 },
+      { "key": "mobility.inboundTrips", "rawValue": 18500, "normalized": 0.85, "weight": 0.18, "weighted": 1.53 },
+      { "key": "pois.hospitality", "rawValue": 355, "normalized": 0.88, "weight": 0.15, "weighted": 1.32 },
+      { "key": "pois.transit", "rawValue": 35, "normalized": 0.72, "weight": 0.10, "weighted": 0.72 },
+      { "key": "weather.comfort", "rawValue": 7.2, "normalized": 0.72, "weight": 0.09, "weighted": 0.65 }
+    ]
+  },
+  "isochrones": {
+    "walk_5": {
+      "population": 12400,
+      "density": 24800,
+      "footfall": 3200,
+      "pois": 245,
+      "hospitality": 95,
+      "retail": 68,
+      "transitStops": 8,
+      "merchants": 18,
+      "meanIncome": 13800,
+      "floatingPeak": 22500,
+      "floatingPeakHour": 12
+    },
+    "walk_15": {
+      "population": 28600,
+      "density": 19100,
+      "footfall": 5800,
+      "pois": 520,
+      "hospitality": 198,
+      "retail": 142,
+      "transitStops": 22,
+      "merchants": 24,
+      "meanIncome": 14050,
+      "floatingPeak": 48200,
+      "floatingPeakHour": 12
+    },
+    "walk_30": {
+      "population": 45200,
+      "density": 14395,
+      "footfall": 8750,
+      "pois": 890,
+      "hospitality": 355,
+      "retail": 263,
+      "transitStops": 35,
+      "merchants": 28,
+      "meanIncome": 14200,
+      "floatingPeak": 68200,
+      "floatingPeakHour": 12
+    },
+    "transit_15": {
+      "population": 95000,
+      "density": 12100,
+      "footfall": 18500,
+      "pois": 1800,
+      "hospitality": 720,
+      "retail": 485,
+      "transitStops": 85,
+      "merchants": 28,
+      "meanIncome": 15200,
+      "floatingPeak": 125000,
+      "floatingPeakHour": 13
+    },
+    "transit_30": {
+      "population": 285000,
+      "density": 6300,
+      "footfall": 52000,
+      "pois": 4500,
+      "hospitality": 1850,
+      "retail": 1200,
+      "transitStops": 220,
+      "merchants": 28,
+      "meanIncome": 17800,
+      "floatingPeak": 380000,
+      "floatingPeakHour": 13
+    },
+    "transit_60": {
+      "population": 1850000,
+      "density": 9420,
+      "footfall": 320000,
+      "pois": 12000,
+      "hospitality": 4800,
+      "retail": 3200,
+      "transitStops": 850,
+      "merchants": 28,
+      "meanIncome": 19500,
+      "floatingPeak": 2450000,
+      "floatingPeakHour": 13
+    }
+  }
+}
